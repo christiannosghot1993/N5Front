@@ -7,6 +7,15 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableBody } from '@mui/material';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import { ButtonIcon } from '../ButtonIcon/ButtonIcon';
+import { getEndpoint } from '../../services/PermisosService'
+function formatoFecha(date) {
+    const año = date.getFullYear();
+    const mes = ('0' + (date.getMonth() + 1)).slice(-2);
+    const dia = ('0' + date.getDate()).slice(-2);
+    return `${año}-${mes}-${dia}`;
+}
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -28,12 +37,29 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-export const TableData = ({ permisos }) => {
+export const TableData = ({ permisos, openModal, setmodalInfo }) => {
+    const handleEdit = (idEmpleado) => {
+        const resp = async () => {
+            const resp = await getEndpoint('/GetPermissionById', { 'id': idEmpleado })
+            setmodalInfo({
+                'id': resp.id,
+                'nombreEmpleado': resp.nombreEmpleado,
+                'apellidoEmpleado': resp.apellidoEmpleado,
+                'fechaPermiso': resp.fechaPermiso,
+                'tipoPermiso': resp.tipoPermiso,
+                'descripcionTipoPermiso': ''
+            });
+        };
+        resp();
+        openModal(true);
+
+    }
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                     <TableRow>
+                        <StyledTableCell align="right"></StyledTableCell>
                         <StyledTableCell align="right">Nombre Empleado</StyledTableCell>
                         <StyledTableCell align="right">Apellido Empleado</StyledTableCell>
                         <StyledTableCell align="right">Fecha Permiso</StyledTableCell>
@@ -45,9 +71,14 @@ export const TableData = ({ permisos }) => {
                         .sort((a, b) => b.id - a.id)
                         .map((data, index) => (
                             <StyledTableRow key={index}>
+                                <StyledTableCell align="right">
+                                    <ButtonIcon handleClick={() => handleEdit(data.id)}>
+                                        <ModeEditIcon />
+                                    </ButtonIcon>
+                                </StyledTableCell>
                                 <StyledTableCell align="right">{data.nombreEmpleado}</StyledTableCell>
                                 <StyledTableCell align="right">{data.apellidoEmpleado}</StyledTableCell>
-                                <StyledTableCell align="right">{data.fechaPermiso}</StyledTableCell>
+                                <StyledTableCell align="right">{formatoFecha(new Date(data.fechaPermiso))}</StyledTableCell>
                                 <StyledTableCell align="right">{data.tipoPermisoNavigation.descripcion}</StyledTableCell>
                             </StyledTableRow>
                         ))}

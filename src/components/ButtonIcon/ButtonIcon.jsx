@@ -1,15 +1,22 @@
+import { Fab } from "@mui/material";
 
-import IconButton from '@mui/material/IconButton';
-import { Delete } from '@mui/icons-material'; // Importa el icono que desees
 
 export const ButtonIcon = (props) => {
 
-  const onClick=()=>props.handleClick();
+  const onClick = () => props.handleClick();
   return (
-    <IconButton aria-label="Delete" onClick={onClick}>
+    <Fab color="primary" aria-label="add" onClick={onClick} sx={
       {
-        props.children
+        marginTop:{
+          md:'15px'
+        },
+        marginBottom:{
+          xs:'10px',
+          md:'0px'
+        }
       }
-    </IconButton>
+    }>
+      {props.children}
+    </Fab>
   )
 }
